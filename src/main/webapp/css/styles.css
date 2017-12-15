@@ -1,0 +1,378 @@
+
+body {
+	font-family: FranKlein, Arial, "Helvetica Neue", Helvetica, sans-serif;
+	font-weight: bold;
+	color: #6f2d00;
+	background-color: #f1da98;
+}
+
+nav.navbar {
+	background-color: #f3e38c;
+	color: #6f2d00;
+	border: 2px solid goldenrod;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.btn-default.active, 
+.btn-default.focus, 
+.btn-default:active, 
+.btn-default:focus, 
+.btn-default:hover, 
+.open>.dropdown-toggle.btn-default {
+    color: #6f2d00;
+    background-color: #d6b707;
+    border-color: #6f2d00;
+}
+
+.btn-danger.active, 
+.btn-danger.focus, 
+.btn-danger:active, 
+.btn-danger:focus, 
+.btn-danger:hover, 
+.open>.dropdown-toggle.btn-danger {
+    color: WHITE;
+    background-color: RED;
+    border-color: #6f2d00;
+}
+
+.btn-group {
+	display: inline-block;
+}
+
+.btn {
+	background-color: #f9db80;
+    color: #6f2d00;
+    border: 1px solid goldenrod;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    font-weight: bold;
+    width: fit-content;
+    white-space: normal;
+    display: inline-block;
+}
+
+.icon {
+	vertical-align: middle;
+}
+
+.icon-lg {
+	vertical-align: baseline;
+}
+
+.new-12 {
+	content: url(../images/new.svg);
+	width: 12px;
+}
+
+.edit-16 {
+	content: url(../images/edit.svg);
+	width: 16px;
+}
+
+.delete-16 {
+	content: url(../images/delete.svg);
+	width: 16px;
+}
+
+.bulk-20 {
+	content: url(../images/bulk.svg);
+	width: 20px;
+}
+
+.back-20 {
+	content: url(../images/back.svg);
+	width: 20px;
+}
+
+.upload-20 {
+	content: url(../images/upload.svg);
+	width: 20px;
+}
+
+.cancel-16 {
+	content: url(../images/cancel.svg);
+	width: 16px;
+}
+
+.save-16 {
+	content: url(../images/save.svg);
+	width: 16px;
+}
+
+.prev-16 {
+	content: url(../images/prev.svg);
+	width: 16px;
+}
+
+.next-16 {
+	content: url(../images/next.svg);
+	width: 16px;
+}
+
+.progress-bar {
+	color: #6f2d00;
+	background-color: #e4c871;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    color: #6f2d00;
+    font-weight: bold;
+}
+
+.sidenav {
+    background-color: #e4c871;
+}
+
+.navbar .navbar-default .navbar-brand {
+    background-color: #f3e38c;
+	color: #6f2d00;
+	border: 0px solid goldenrod;
+}
+
+.navbar-default .navbar-brand {
+	color: #6f2d00;
+}
+
+.navbar-default .navbar-brand:focus, .navbar-default .navbar-brand:hover {
+	color: #6f2d00;
+    background-color: rgb(228, 179, 0);
+}
+
+.navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover {
+    color: #6f2d00;
+    background-color: rgb(228, 179, 0);
+    font-weight: bold;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #6f2d00;
+	border: 0px solid goldenrod;
+}
+
+.nav-stacked>li {
+    border-bottom: 2px solid #6f2d0024;
+}
+
+.nav-stacked>li>a {
+	padding-left: 30%;
+}
+
+.navbar-default .navbar-text {
+    color: #6f2d00;
+	border: 0px solid goldenrod;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+    background-color: #b79b33;
+}
+
+a {
+    color: #6f2d00;
+}
+
+a:focus, a:hover {
+    color: #6f2d00;
+}
+
+.form-control {
+    background-color: #f3e38c;
+	color: #6f2d00;
+	border: 2px solid goldenrod;
+}
+
+input[type=file] {
+    border-color: goldenrod;
+    background-color: #f3e38c;
+}
+
+.media {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.media-body, .media-left, .media-right {
+	background-color: #e4c871;
+    border: 2px solid goldenrod;
+    padding: 5px;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    text-align: center;
+}
+
+div#content-wrapper {
+    text-align: center;
+}
+
+div.center {
+	text-align: -webkit-center;
+	text-align: -moz-center;
+}
+
+img {
+	max-width: -webkit-fill-available;
+	max-width: -moz-available;
+}
+
+img.thumb {
+    width: auto;
+    height: auto;
+	max-height: 200px;
+	max-width: 100%;
+	border: 1px solid goldenrod;
+}
+
+/* Circular Images */
+div.img-circle-lg {
+    width: 100%;
+    padding-bottom: 98%;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid goldenrod;
+    border-radius: 50%;
+}
+
+.img-circle-lg div {
+    position: absolute;
+	top: 0; bottom: 0; left: 0; right: 0;
+}
+
+div.img-circle-sm {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid goldenrod;
+    vertical-align: middle;
+    border-radius: 50%;
+}
+
+.img-circle-sm div {
+    position: absolute;
+	top: 0; bottom: 0; left: 0; right: 0;
+}
+
+p.text-after-icon {
+	display: inline-block;
+	margin-left: 10px;
+	margin-bottom: 0;
+}
+
+.video-js .vjs-control-bar {
+	background-color: rgba(245, 232, 83, 0.56);
+}
+
+img.banner {
+	background-color: #e4c871;
+    border: 2px solid goldenrod;
+    padding: 1px;
+}
+
+div.thumb {
+	padding: 6px;
+}
+
+p.description {
+	margin-top: 12;
+	text-align: left;
+}
+
+div.view-post {
+	margin-top: 16;
+}
+
+.post-title {
+	text-align: center;
+	font-weight: bold;
+}
+
+.post-image {
+	max-width: 100%;
+}
+
+.post-description {
+	margin-top: 20;
+}
+
+.text-block {
+	background-color: #e4c871;
+    border: 2px solid goldenrod;
+    padding: 0px;
+    text-align: left;
+}
+
+.content-wrapper {
+	text-align: center;
+}
+
+@media (min-width: 768px) {
+.col-sm-6 {
+    width: 49%;
+    margin: 1px;
+}
+
+p.url {
+	word-wrap: break-word;
+}
+
+.error {
+	font-weight: bold;
+	color: RED;
+}
+
+/* Set height of the grid so .sidenav can be 100% (adjust if needed) */
+    .row.content {
+      height: fit-content;
+	}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      height: auto;
+    }
+}
+    
+    .nav-pills>li.active>a, 
+    .nav-pills>li.active>a:focus, 
+    .nav-pills>li.active>a:hover {
+    	color: #6f2d00;
+    	background-color: #b79b33;
+    }
+    
+    .nav>li>a:focus, .nav>li>a:hover {
+    	color: #6f2d00;
+    	background-color: #b79b33;
+    }
+    
+    .nav-stacked>li:first-child {
+	    margin-top: 16px;
+	}
+	
+	.nav>li {
+		max-height: fit-content;
+		max-height: -moz-fit-content;
+	}
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #e4c871;
+      color: #6f2d00;
+      padding: 15px;
+    }
+    
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      
+      .sidenav>ul {
+        text-align: center;
+      }
+      
+      .nav-stacked>li>a {
+	    padding-right: 5%;
+	    padding-left: 0;
+      }
+      
+      .row.content {height: auto;} 
+}
