@@ -105,6 +105,7 @@
   <version>1.19.4</version>
 </dependency>
 
+<!-- Guava declaration needed to avoid dependency collision in GCP APIs -->
 <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 <dependency>
     <groupId>com.google.guava</groupId>
