@@ -174,9 +174,14 @@ a:focus, a:hover {
 }
 
 .form-control {
-    background-color: #f3e38c;
+  background-color: #f3e38c;
 	color: #6f2d00;
 	border: 2px solid goldenrod;
+}
+
+.form-control:focus {
+	border-color: #af7e03;
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgb(175, 126, 3);
 }
 
 input[type=file] {
@@ -191,15 +196,15 @@ input[type=file] {
 
 .media-body, .media-left, .media-right {
 	background-color: #e4c871;
-    border: 2px solid goldenrod;
-    padding: 5px;
-    width: -webkit-fill-available;
-    width: -moz-available;
-    text-align: center;
+  border: 2px solid goldenrod;
+  padding: 5px;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  text-align: center;
 }
 
 div#content-wrapper {
-    text-align: center;
+  text-align: center;
 }
 
 div.center {
