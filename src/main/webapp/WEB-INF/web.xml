@@ -4,15 +4,12 @@
   <welcome-file-list>
     <welcome-file>base.jsp</welcome-file>
   </welcome-file-list>
-  
-	<context-param>
-        <param-name>skelly.storageType</param-name>
-        <param-value>datastore</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>skelly.bucket</param-name>
-        <param-value>mchistory-666.appspot.com</param-value>
-    </context-param>
-  
+  <context-param>
+    <param-name>skelly.storageType</param-name>
+    <param-value>datastore</param-value>
+  </context-param>
+  <context-param>
+    <param-name>skelly.bucket</param-name>
+    <param-value>mchistory-666.appspot.com</param-value>
+  </context-param>
 </web-app>
