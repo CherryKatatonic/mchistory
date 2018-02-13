@@ -10,13 +10,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="css/jquery-ui.min.css">
-	<script src="javascript/jquery.js"></script>
-	<script src="javascript/jquery-ui.js"></script>
-	<link href="css/video-js.css" rel="stylesheet">
-    <script src="javascript/videojs-ie8.min.js"></script>
+    <link rel="stylesheet" href="lib/css/bootstrap.css">
+    <link rel="stylesheet" href="lib/css/jquery-ui.min.css">
+	<script src="lib/js/jquery.js"></script>
+	<script src="lib/js/jquery-ui.js"></script>
+	<link href="lib/css/video-js.css" rel="stylesheet">
+    <script src="lib/js/videojs-ie8.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   	<script src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js"></script>
   	<link rel="stylesheet" href="css/styles.css">
