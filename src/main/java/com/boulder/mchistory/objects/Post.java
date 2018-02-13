@@ -1,7 +1,5 @@
 package com.boulder.mchistory.objects;
 
-import java.util.Date;
-
 import com.google.cloud.Timestamp;
 
 // [START example]

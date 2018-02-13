@@ -317,10 +317,10 @@ public class PostDatastore implements PostDao {
 	  Cursor startCursor = null;
 	    
 	    if (startCursorString != null && !startCursorString.equals("")) {
-	      startCursor = Cursor.fromUrlSafe(startCursorString);    // Where we left off
+	      startCursor = Cursor.fromUrlSafe(startCursorString); 
 	    }
 	    
-	    Query<Entity> query = Query.newEntityQueryBuilder()      // Build the Query
+	    Query<Entity> query = Query.newEntityQueryBuilder()
 	            .setKind("Post") 
 	            .setFilter(PropertyFilter.eq(Post.TYPE, "Video"))
 	            .setLimit(20)
@@ -334,43 +334,37 @@ public class PostDatastore implements PostDao {
 	    logger.info("PostDatastore resultPosts = " + resultPosts);
 	    Cursor cursor = resultList.getCursorAfter();
 	    
-	    if (cursor != null && resultPosts.size() == 20) {         // Are we paging? Save Cursor
+	    if (cursor != null && resultPosts.size() == 20) {      
 	        String cursorString = cursor.toUrlSafe();
 	        logger.info("Post Datastore cursor toUrlSafe set to " + cursorString);
 	        return new Result<>(resultPosts, cursorString);
-	      } else {
+	    } else {
 	        return new Result<>(resultPosts);
-	      }
-	  
+	    }
   }
   
-  // [START listbyuser]
   @Override
   public Result<Post> listPostsByUser(String userId, String startCursorString) {
     Cursor startCursor = null;
     if (startCursorString != null && !startCursorString.equals("")) {
-      startCursor = Cursor.fromUrlSafe(startCursorString);    // Where we left off
+      startCursor = Cursor.fromUrlSafe(startCursorString);    
     }
-    Query<Entity> query = Query.newEntityQueryBuilder()          // Build the Query
-        .setKind("Post")                                        // We only care about Posts
-        .setFilter(PropertyFilter.eq(Post.CREATED_BY_ID, userId))// Only for this user
-        .setLimit(10)                                            // Only show 10 at a time
-        .setStartCursor(startCursor)                             // Where we left off
-        // a custom datastore index is required since you are filtering by one property
-        // but ordering by another
+    Query<Entity> query = Query.newEntityQueryBuilder()          
+        .setKind("Post")                                        
+        .setFilter(PropertyFilter.eq(Post.CREATED_BY_ID, userId))
+        .setLimit(10)                                            
+        .setStartCursor(startCursor)                             
         .setOrderBy(OrderBy.asc(Post.TITLE))
         .build();
-    QueryResults<Entity> resultList = datastore.run(query);   // Run the Query
+    QueryResults<Entity> resultList = datastore.run(query);
 	
-    List<Post> resultPosts = entitiesToPosts(resultList);     // Retrieve and convert Entities
-    Cursor cursor = resultList.getCursorAfter();              // Where to start next time
-    if (cursor != null && resultPosts.size() == 10) {         // Are we paging? Save Cursor
-      String cursorString = cursor.toUrlSafe();               // Cursors are WebSafe
+    List<Post> resultPosts = entitiesToPosts(resultList);
+    Cursor cursor = resultList.getCursorAfter();
+    if (cursor != null && resultPosts.size() == 10) {
+      String cursorString = cursor.toUrlSafe();
       return new Result<>(resultPosts, cursorString);
     } else {
       return new Result<>(resultPosts);
     }
   }
-  // [END listbyuser]
 }
-// [END example]
