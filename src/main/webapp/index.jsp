@@ -1,78 +1,25 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<!doctype html>
 
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>MC History</title>
-<script src="jquery-3.2.1.min.js"></script>
+    <!-- Required meta tags for Bootstrap -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="assets/bootstrap/bootstrap-4.0.0.min.css">
+    <link rel="stylesheet" href="assets/css/mchistory.css">
+    <title>Title</title>
 </head>
 
 <body>
-<h1>Greetings.</h1>
-<br>
-<button id="clickme">Click Me</button>
-<br>
-<form method="GET" enctype="multipart/form-data" action="DatastoreTest">
-	<button type="submit">Test Datastore</button>
-</form>
-<br>
-<p id="resp"></p>
-<br>
-<br>
-<form id="myform">
-	<input type="text" name="name" placeholder="Name">
-	<input type="text" name="job" placeholder="Job">
-	<input type="text" name="bio" placeholder="About me...">
-	<br>
-	<button id="submit" type="submit">Submit</button>
-</form>
-<br>
-<div id="json"></div>
+<h1>Hello World</h1>
 
+<!-- Required script tags for Bootstrap -->
+<script src="${request.contextPath}/assets/jquery/jquery-3.2.1.min.js"></script>
+<script src="${request.contextPath}/assets/popper/popper-1.12.9.min.js"></script>
+<script src="${request.contextPath}/assets/bootstrap/bootstrap-4.0.0.min.js"></script>
 </body>
-
-
-
-<script>
-	$("#clickme").click(function() {
-		$.get("Index", function(data) {
-			$("#resp").text(data);
-		});
-	});
-</script>
-
-<script>
-
-	$(document).ready(function() {
-	    $("#myform").submit(function(e){
-	           e.preventDefault();
-	    });
-	});
-	
-	$("#submit").click(function() {
-	    
-	    $.ajax({
-    	        url : "Index",
-    	        type: "POST",
-    	        data : $("#myform").serialize(),
-    	        dataType : "json",
-    	        
-    	        success: function(data) {
-    	        	data.forEach(function(obj) {
-    	        		$("#json").append("<p>"+obj+"</p><br>");
-    	        	});
-                },
-    	        
-    	        error: function() {
-    	            //if fails   
-    	            $("#json").text("An error occured.");
-    	        }
-    	    });
-		
-	});
-
-</script>
 
 </html>
