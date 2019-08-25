@@ -35,6 +35,13 @@ cmake-build-release/
 # IntelliJ
 out/
 
+
+.classpath
+.factorypath
+.vscode/
+.settings/
+
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
