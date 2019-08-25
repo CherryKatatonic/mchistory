@@ -2,18 +2,10 @@ package com.boulder.mchistory.auth;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URLEncoder;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -22,10 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
-import com.boulder.mchistory.auth.PasswordStorage;
 import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
 import com.boulder.mchistory.daos.UserDao;
 import com.boulder.mchistory.objects.User;
