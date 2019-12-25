@@ -5,17 +5,6 @@ import com.boulder.mchistory.objects.Post;
 import com.boulder.mchistory.util.CloudStorageHelper;
 import com.google.cloud.Timestamp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 @MultipartConfig
@@ -77,8 +72,11 @@ public class BulkUpload extends HttpServlet {
 
     PostDao dao = (PostDao) this.getServletContext().getAttribute("postDao");
     
-    List<Part> fileParts = req.getParts().stream().filter(
-    	part -> "file".equals(part.getName())).collect(Collectors.toList());
+    List<Part> fileParts = req
+			.getParts()
+			.stream()
+			.filter(part -> "file".equals(part.getName()))
+			.collect(Collectors.toList());
     
     switch (req.getParameter("type")) {
     
