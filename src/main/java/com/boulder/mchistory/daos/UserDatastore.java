@@ -1,31 +1,18 @@
 package com.boulder.mchistory.daos;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.boulder.mchistory.auth.PasswordStorage;
 import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
 import com.boulder.mchistory.auth.PasswordStorage.InvalidHashException;
-import com.boulder.mchistory.objects.Post;
 import com.boulder.mchistory.objects.Result;
 import com.boulder.mchistory.objects.User;
-import com.google.cloud.datastore.Cursor;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.EntityQuery;
-import com.google.cloud.datastore.FullEntity;
-import com.google.cloud.datastore.IncompleteKey;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyFactory;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
-import com.google.cloud.datastore.StructuredQuery.OrderBy;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.datastore.*;
 import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -36,8 +23,8 @@ public class UserDatastore implements UserDao {
 	private KeyFactory keyFactory;
 	private KeyFactory hashFactory;
 
-	public UserDatastore() {
-		datastore = DatastoreOptions.getDefaultInstance().getService(); // Authorized Datastore service
+	public UserDatastore(GoogleCredentials credentials) {
+		datastore = DatastoreOptions.newBuilder().setCredentials(credentials).build().getService(); // Authorized Datastore service
 	    keyFactory = datastore.newKeyFactory().setKind("User");
 	    hashFactory = datastore.newKeyFactory().setKind("Hash");
 	}

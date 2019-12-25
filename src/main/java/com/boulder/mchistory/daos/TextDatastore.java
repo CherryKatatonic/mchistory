@@ -1,16 +1,12 @@
 package com.boulder.mchistory.daos;
 
-import java.sql.SQLException;
-import java.util.logging.Logger;
+import com.boulder.mchistory.objects.Text;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.datastore.*;
 
 import javax.servlet.http.HttpServlet;
-
-import com.boulder.mchistory.objects.Text;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyFactory;
+import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class TextDatastore extends HttpServlet implements TextDao {
 	
@@ -18,8 +14,8 @@ public class TextDatastore extends HttpServlet implements TextDao {
 	  private KeyFactory keyFactory;
 	  private final Logger logger = Logger.getLogger(TextDatastore.class.getName());
 
-	public TextDatastore() {
-		datastore = DatastoreOptions.getDefaultInstance().getService(); // Authorized Datastore service
+	public TextDatastore(GoogleCredentials credentials) {
+		datastore = DatastoreOptions.newBuilder().setCredentials(credentials).build().getService(); // Authorized Datastore service
 	    keyFactory = datastore.newKeyFactory().setKind("Text");
 	    
 	}

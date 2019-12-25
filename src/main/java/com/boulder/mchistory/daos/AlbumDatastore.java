@@ -1,22 +1,14 @@
 package com.boulder.mchistory.daos;
 
+import com.boulder.mchistory.objects.Album;
+import com.boulder.mchistory.objects.Result;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.datastore.*;
+import com.google.cloud.datastore.StructuredQuery.OrderBy;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.boulder.mchistory.objects.Album;
-import com.boulder.mchistory.objects.Result;
-import com.google.cloud.datastore.Cursor;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.FullEntity;
-import com.google.cloud.datastore.IncompleteKey;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyFactory;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
-import com.google.cloud.datastore.StructuredQuery.OrderBy;
 
 public class AlbumDatastore implements AlbumDao {
 	
@@ -25,8 +17,8 @@ public class AlbumDatastore implements AlbumDao {
 	  private KeyFactory keyFactory;
 	 
 
-	public AlbumDatastore() {
-		datastore = DatastoreOptions.getDefaultInstance().getService(); // Authorized Datastore service
+	public AlbumDatastore(GoogleCredentials credentials) {
+		datastore = DatastoreOptions.newBuilder().setCredentials(credentials).build().getService(); // Authorized Datastore service
 	    keyFactory = datastore.newKeyFactory().setKind("Album");      // Is used for creating keys later
 	}
 	 // [END constructor]

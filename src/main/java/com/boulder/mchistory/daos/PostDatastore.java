@@ -2,16 +2,8 @@ package com.boulder.mchistory.daos;
 
 import com.boulder.mchistory.objects.Post;
 import com.boulder.mchistory.objects.Result;
-import com.google.cloud.datastore.Cursor;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.FullEntity;
-import com.google.cloud.datastore.IncompleteKey;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyFactory;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.datastore.*;
 import com.google.cloud.datastore.StructuredQuery.OrderBy;
 import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
 
@@ -28,8 +20,8 @@ public class PostDatastore implements PostDao {
   private static final Logger logger = Logger.getLogger(PostDatastore.class.getName());
 
 
-  public PostDatastore() {
-    datastore = DatastoreOptions.getDefaultInstance().getService(); // Authorized Datastore service
+  public PostDatastore(GoogleCredentials credentials) {
+    datastore = DatastoreOptions.newBuilder().setCredentials(credentials).build().getService(); // Authorized Datastore service
     keyFactory = datastore.newKeyFactory().setKind("Post");      // Is used for creating keys later
   }
   // [END constructor]
