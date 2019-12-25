@@ -1,24 +1,17 @@
 package com.boulder.mchistory.auth;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URLEncoder;
-import java.security.SecureRandom;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
-import java.util.logging.Logger;
+import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
+import com.boulder.mchistory.auth.PasswordStorage.InvalidHashException;
+import com.boulder.mchistory.daos.UserDao;
+import com.boulder.mchistory.objects.User;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.multipart.FormDataMultiPart;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.net.ssl.SSLSocketFactory;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -26,25 +19,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
-
-import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
-import com.boulder.mchistory.auth.PasswordStorage.InvalidHashException;
-import com.boulder.mchistory.daos.UserDao;
-import com.boulder.mchistory.objects.User;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.multipart.FormDataMultiPart;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import net.sargue.mailgun.Configuration;
-import net.sargue.mailgun.Mail;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.security.SecureRandom;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 @MultipartConfig
@@ -101,7 +83,7 @@ public class VerifyEmail extends HttpServlet {
 		    req.getSession().setAttribute("state", state);
 			
 			try {
-				if (dao.isUser(email) == false) {
+				if (!dao.isUser(email)) {
 					String error = "Email was not found in the database.";
 					req.setAttribute("verifyEmail", email);
 					req.setAttribute("verifyError", error);
@@ -128,8 +110,8 @@ public class VerifyEmail extends HttpServlet {
 			String pass = req.getParameter("pass");
 			Long uid = Long.decode(req.getParameter("uid"));
 			String keyString = req.getParameter("state");
-			String hash = null;
-			String error = null;
+			String hash;
+			String error;
 			User user = null;
 			
 			try {
@@ -140,7 +122,7 @@ public class VerifyEmail extends HttpServlet {
 			}
 			
 			try {
-				if (PasswordStorage.verifyPassword(pass, hash) == false) {
+				if (!PasswordStorage.verifyPassword(pass, hash)) {
 					error = "Incorrect password.";
 					req.setAttribute("uid", uid);
 					req.setAttribute("state", keyString);
@@ -150,14 +132,11 @@ public class VerifyEmail extends HttpServlet {
 				    req.getRequestDispatcher("/base.jsp").forward(req, resp);
 				    return;
 				}
-			} catch (CannotPerformOperationException e) {
-				e.printStackTrace();
-				throw new ServletException(e.getMessage());
-			} catch (InvalidHashException e) {
+			} catch (CannotPerformOperationException | InvalidHashException e) {
 				e.printStackTrace();
 				throw new ServletException(e.getMessage());
 			}
-			
+
 			try {
 				dao.verifyEmail(uid);
 				user = dao.getUser(uid);
@@ -191,7 +170,8 @@ public class VerifyEmail extends HttpServlet {
 				req.getSession().setAttribute("token", jwt);
 				req.getSession().setAttribute("userId", uid);
 				req.getSession().setAttribute("user", user);
-				req.getSession().setAttribute("userEmail", user.getEmail());
+			assert user != null;
+			req.getSession().setAttribute("userEmail", user.getEmail());
 				req.getSession().setAttribute("userName", user.getUsername());
 				req.getSession().setAttribute("userImage", user.getImageUrl());
 				req.getSession().setAttribute("isAdmin", user.isAdmin());
@@ -206,7 +186,7 @@ public class VerifyEmail extends HttpServlet {
 	}
 	
 // [SEND CONFIRMATION EMAIL] ------------------------------------------------------
-	public static ClientResponse sendComplexMessage(String email, UserDao dao, String state) throws IOException {
+	public static void sendComplexMessage(String email, UserDao dao, String state) throws IOException {
 		Long uid = null;
 		String hash = null;
 		
@@ -231,9 +211,9 @@ public class VerifyEmail extends HttpServlet {
 		  formData.field("to", email);
 		  formData.field("subject", "Confirm Your Email");
 		  formData.field("html", html);
-		  
-		  return webResource.type(MediaType.MULTIPART_FORM_DATA_TYPE)
-		      .post(ClientResponse.class, formData);
-		}
+
+		webResource.type(MediaType.MULTIPART_FORM_DATA_TYPE)
+				.post(ClientResponse.class, formData);
+	}
 
 	 }
