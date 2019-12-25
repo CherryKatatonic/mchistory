@@ -1,15 +1,15 @@
 package com.boulder.mchistory.auth;
+// https://github.com/defuse/password-hashing
 
-import java.security.SecureRandom;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.util.logging.Logger;
+import java.util.Base64;
 
-import javax.xml.bind.DatatypeConverter;
-
-public class PasswordStorage {
+public class PasswordStorage
+{
 
     @SuppressWarnings("serial")
     static public class InvalidHashException extends Exception {
@@ -45,18 +45,15 @@ public class PasswordStorage {
     public static final int HASH_SIZE_INDEX = 2;
     public static final int SALT_INDEX = 3;
     public static final int PBKDF2_INDEX = 4;
-    
-	private static final Logger logger = Logger.getLogger(LoginEmail.class.getName());
 
     public static String createHash(String password)
-        throws CannotPerformOperationException
+            throws CannotPerformOperationException
     {
         return createHash(password.toCharArray());
-        
     }
 
     public static String createHash(char[] password)
-        throws CannotPerformOperationException
+            throws CannotPerformOperationException
     {
         // Generate a random salt
         SecureRandom random = new SecureRandom();
@@ -69,37 +66,36 @@ public class PasswordStorage {
 
         // format: algorithm:iterations:hashSize:salt:hash
         String parts = "sha1:" +
-            PBKDF2_ITERATIONS +
-            ":" + hashSize +
-            ":" +
-            toBase64(salt) +
-            ":" +
-            toBase64(hash);
-        logger.info("Created hash "+parts);
+                PBKDF2_ITERATIONS +
+                ":" + hashSize +
+                ":" +
+                toBase64(salt) +
+                ":" +
+                toBase64(hash);
         return parts;
     }
 
     public static boolean verifyPassword(String password, String correctHash)
-        throws CannotPerformOperationException, InvalidHashException
+            throws CannotPerformOperationException, InvalidHashException
     {
         return verifyPassword(password.toCharArray(), correctHash);
     }
 
     public static boolean verifyPassword(char[] password, String correctHash)
-        throws CannotPerformOperationException, InvalidHashException
+            throws CannotPerformOperationException, InvalidHashException
     {
         // Decode the hash into its parameters
         String[] params = correctHash.split(":");
         if (params.length != HASH_SECTIONS) {
             throw new InvalidHashException(
-                "Fields are missing from the password hash."
+                    "Fields are missing from the password hash."
             );
         }
 
         // Currently, Java only supports SHA1.
         if (!params[HASH_ALGORITHM_INDEX].equals("sha1")) {
             throw new CannotPerformOperationException(
-                "Unsupported hash type."
+                    "Unsupported hash type."
             );
         }
 
@@ -108,14 +104,14 @@ public class PasswordStorage {
             iterations = Integer.parseInt(params[ITERATION_INDEX]);
         } catch (NumberFormatException ex) {
             throw new InvalidHashException(
-                "Could not parse the iteration count as an integer.",
-                ex
+                    "Could not parse the iteration count as an integer.",
+                    ex
             );
         }
 
         if (iterations < 1) {
             throw new InvalidHashException(
-                "Invalid number of iterations. Must be >= 1."
+                    "Invalid number of iterations. Must be >= 1."
             );
         }
 
@@ -125,8 +121,8 @@ public class PasswordStorage {
             salt = fromBase64(params[SALT_INDEX]);
         } catch (IllegalArgumentException ex) {
             throw new InvalidHashException(
-                "Base64 decoding of salt failed.",
-                ex
+                    "Base64 decoding of salt failed.",
+                    ex
             );
         }
 
@@ -135,8 +131,8 @@ public class PasswordStorage {
             hash = fromBase64(params[PBKDF2_INDEX]);
         } catch (IllegalArgumentException ex) {
             throw new InvalidHashException(
-                "Base64 decoding of pbkdf2 output failed.",
-                ex
+                    "Base64 decoding of pbkdf2 output failed.",
+                    ex
             );
         }
 
@@ -146,18 +142,18 @@ public class PasswordStorage {
             storedHashSize = Integer.parseInt(params[HASH_SIZE_INDEX]);
         } catch (NumberFormatException ex) {
             throw new InvalidHashException(
-                "Could not parse the hash size as an integer.",
-                ex
+                    "Could not parse the hash size as an integer.",
+                    ex
             );
         }
 
         if (storedHashSize != hash.length) {
             throw new InvalidHashException(
-                "Hash length doesn't match stored hash length."
+                    "Hash length doesn't match stored hash length."
             );
         }
 
-        // Compute the hash of the provided password, using the same salt, 
+        // Compute the hash of the provided password, using the same salt,
         // iteration count, and hash length
         byte[] testHash = pbkdf2(password, salt, iterations, hash.length);
         // Compare the hashes in constant time. The password is correct if
@@ -174,7 +170,7 @@ public class PasswordStorage {
     }
 
     private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes)
-        throws CannotPerformOperationException
+            throws CannotPerformOperationException
     {
         try {
             PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, bytes * 8);
@@ -182,26 +178,26 @@ public class PasswordStorage {
             return skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException ex) {
             throw new CannotPerformOperationException(
-                "Hash algorithm not supported.",
-                ex
+                    "Hash algorithm not supported.",
+                    ex
             );
         } catch (InvalidKeySpecException ex) {
             throw new CannotPerformOperationException(
-                "Invalid key spec.",
-                ex
+                    "Invalid key spec.",
+                    ex
             );
         }
     }
 
     private static byte[] fromBase64(String hex)
-        throws IllegalArgumentException
+            throws IllegalArgumentException
     {
-        return DatatypeConverter.parseBase64Binary(hex);
+        return Base64.getDecoder().decode(hex);
     }
 
     private static String toBase64(byte[] array)
     {
-        return DatatypeConverter.printBase64Binary(array);
+        return Base64.getEncoder().encodeToString(array);
     }
 
 }
