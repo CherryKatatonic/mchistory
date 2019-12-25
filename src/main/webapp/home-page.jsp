@@ -17,9 +17,10 @@ $(document).ready(function(){
         if (scrollBottom <= 100 && $('#cursor').val() != null && $('#cursor').val() != '') {
         	if(!requestSent) {
 	        	requestSent = true;
+	        	var baseUrl = window.location.href.slice(0, window.location.href.lastIndexOf('/'));
 	            jQuery('#loading').show("slow");
 	            $.get({
-	                url: '/HomePageScroll?cursor='+$('#cursor').val(),
+	                url: baseUrl + '/HomePageScroll?cursor='+$('#cursor').val(),
 	                dataType: 'html',
 	                success: function(html) {
 	                	$('#cursor').remove();

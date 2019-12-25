@@ -18,9 +18,10 @@ $(document).ready(function(){
         if (scrollBottom <= 100 && $('#cursor').val() != null && $('#cursor').val() != '') {
         	if(!requestSent) {
 	        	requestSent = true;
+                var baseUrl = window.location.href.slice(0, window.location.href.lastIndexOf('/'));
 	            $('#loading').show();
 	            $.get({
-	                url: '/ViewAlbumScroll?cursor='+$('#cursor').val()+'&album='+$('#album').val(),
+	                url: baseUrl + '/ViewAlbumScroll?cursor='+$('#cursor').val()+'&album='+$('#album').val(),
 	                dataType: 'html',
 	                success: function(html) {
 	                	$('#cursor, #album').remove();

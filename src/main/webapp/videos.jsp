@@ -18,9 +18,10 @@ $(document).ready(function(){
         if (scrollBottom <= 100 && $('#cursor').val() != null && $('#cursor').val() != '') {
         	if(!requestSent) {
 	        	requestSent = true;
+                var baseUrl = window.location.href.slice(0, window.location.href.lastIndexOf('/'));
 	            $('#loading').show();
 	            $.get({
-	                url: '/VideosScroll?cursor='+$('#cursor').val(),
+	                url: baseUrl + '/VideosScroll?cursor='+$('#cursor').val(),
 	                dataType: 'html',
 	                success: function(html) {
 	                	$('#cursor').remove();
