@@ -1,13 +1,11 @@
 package com.boulder.mchistory.auth;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Date;
-import java.util.Calendar;
+import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
+import com.boulder.mchistory.auth.PasswordStorage.InvalidHashException;
+import com.boulder.mchistory.daos.UserDao;
+import com.boulder.mchistory.objects.User;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -16,14 +14,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
-import com.boulder.mchistory.auth.PasswordStorage.InvalidHashException;
-import com.boulder.mchistory.daos.UserDao;
-import com.boulder.mchistory.objects.User;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 @MultipartConfig
@@ -69,21 +66,16 @@ public class LoginEmail extends HttpServlet {
 		char[] pass = req.getParameter("password").toCharArray();
 		Long uid;
 		User user = null;
-		String hash = "";
-		String error = "";
+		String hash;
+		String error;
 		req.setAttribute("loginError", "");
 		
 // [DOES USER EXIST?]		
 		try {
-			if (dao.isUser(email) == false) {
+			if (!dao.isUser(email)) {
 				error = "User not found.";
-				req.setAttribute("loginEmail", email);
-				req.setAttribute("loginError", error);
-				req.setAttribute("action", "Log In");
-			    req.setAttribute("destination", "LoginEmail");  // The urlPattern to invoke (this Servlet)
-			    req.setAttribute("page", "form-login");           // Tells base.jsp to include form.jsp
-			    req.getRequestDispatcher("/base.jsp").forward(req, resp);
-			    return;
+				alertUserNotFound(req, resp, email, error);
+				return;
 			}
 		} catch (SQLException e2) {
 			e2.printStackTrace();
@@ -98,15 +90,9 @@ public class LoginEmail extends HttpServlet {
 		
 // [IS USER EMAIL VERIFIED?]
 		try {
-			if (dao.getUser(uid).getEmailVerified() == false) {
+			if (!dao.getUser(uid).getEmailVerified()) {
 				error = "You must verify your email before logging in.";
-				req.setAttribute("loginEmail", email);
-				req.setAttribute("loginError", error);
-				req.setAttribute("action", "Log In");
-			    req.setAttribute("destination", "LoginEmail");
-			    req.setAttribute("page", "form-login");
-			    req.getRequestDispatcher("/base.jsp").forward(req, resp);
-			    return;
+				alertUserNotFound(req, resp, email, error);
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -122,24 +108,15 @@ public class LoginEmail extends HttpServlet {
 		
 // [IS PASSWORD CORRECT?]
 		try {
-			if (PasswordStorage.verifyPassword(pass, hash) == false) {
+			if (!PasswordStorage.verifyPassword(pass, hash)) {
 				error = "Invalid password.";
-				req.setAttribute("loginEmail", email);
-				req.setAttribute("loginError", error);
-				req.setAttribute("action", "Log In");
-			    req.setAttribute("destination", "LoginEmail"); 
-			    req.setAttribute("page", "form-login");          
-			    req.getRequestDispatcher("/base.jsp").forward(req, resp);
-			    return;
+				alertUserNotFound(req, resp, email, error);
 			}
-		} catch (CannotPerformOperationException e) {
-			e.printStackTrace();
-			throw new ServletException(e.getMessage());
-		} catch (InvalidHashException e) {
+		} catch (CannotPerformOperationException | InvalidHashException e) {
 			e.printStackTrace();
 			throw new ServletException(e.getMessage());
 		}
-		
+
 // [GET USER]
 		try {
 			user = dao.getUser(uid);
@@ -176,11 +153,21 @@ public class LoginEmail extends HttpServlet {
 		ses.setAttribute("userId", uid);
 		ses.setAttribute("user", user);
 		ses.setAttribute("userEmail", email);
-		ses.setAttribute("userName", user.getUsername());
+		  assert user != null;
+		  ses.setAttribute("userName", user.getUsername());
 		ses.setAttribute("userImage", user.getImageUrl());
 		ses.setAttribute("isAdmin", user.isAdmin());
 		ses.setAttribute("emailVerified", user.getEmailVerified());
 		String url = resp.encodeRedirectURL("Home");
 		resp.sendRedirect(url);
 	  }
+
+	private void alertUserNotFound(HttpServletRequest req, HttpServletResponse resp, String email, String error) throws ServletException, IOException {
+		req.setAttribute("loginEmail", email);
+		req.setAttribute("loginError", error);
+		req.setAttribute("action", "Log In");
+		req.setAttribute("destination", "LoginEmail");  // The urlPattern to invoke (this Servlet)
+		req.setAttribute("page", "form-login");           // Tells base.jsp to include form.jsp
+		req.getRequestDispatcher("/base.jsp").forward(req, resp);
+	}
 }
