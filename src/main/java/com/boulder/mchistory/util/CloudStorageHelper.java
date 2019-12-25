@@ -1,28 +1,27 @@
 package com.boulder.mchistory.util;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Acl.Role;
 import com.google.cloud.storage.Acl.User;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 // [START example]
 public class CloudStorageHelper {
@@ -30,11 +29,17 @@ public class CloudStorageHelper {
   private final Logger logger = Logger.getLogger(CloudStorageHelper.class.getName());
   private static Storage storage = null;
 
-  // [START init]
-  static {
-    storage = StorageOptions.getDefaultInstance().getService();
+  public CloudStorageHelper(GoogleCredentials credentials) {
+      storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
   }
-  // [END init]
+
+  private String getFileName(Part part) {
+      for (String content : part.getHeader("content-disposition").split(";")) {
+          if (content.trim().startsWith("filename"))
+              return content.substring(content.indexOf("=") + 2, content.length() - 1);
+      }
+      return "DEFAULT_FILENAME";
+  }
 
   // [START uploadFile]
   /**
@@ -45,7 +50,7 @@ public class CloudStorageHelper {
     DateTimeFormatter dtf = DateTimeFormat.forPattern("-YYYY-MM-dd-HHmmssSSS");
     DateTime dt = DateTime.now(DateTimeZone.UTC);
     String dtString = dt.toString(dtf);
-    final String fileName = filePart.getSubmittedFileName() + dtString;
+    final String fileName = getFileName(filePart) + dtString;
     byte[] fileBytes = IOUtils.toByteArray(filePart.getInputStream());
 
     // the inputstream is closed by default, so we don't need to close it here
@@ -59,7 +64,7 @@ public class CloudStorageHelper {
                 fileBytes);
     logger.log(
         Level.INFO, "Uploaded file {0} as {1}", new Object[]{
-            filePart.getSubmittedFileName(), fileName});
+            getFileName(filePart), fileName});
     // return the public download link
     return blobInfo.getMediaLink();
   }
@@ -72,7 +77,7 @@ public class CloudStorageHelper {
    */
   public String getImageUrl(Part part, HttpServletRequest req, HttpServletResponse resp,
                             final String bucket) throws IOException, ServletException {
-    final String fileName = part.getSubmittedFileName();
+    final String fileName = getFileName(part);
     String imageUrl = req.getParameter("imageUrl");
     // Check extension of file
     if (fileName != null && !fileName.isEmpty() && fileName.contains(".")) {
@@ -94,7 +99,7 @@ public class CloudStorageHelper {
   
   public String getVideoUrl(Part part, HttpServletRequest req, HttpServletResponse resp,
           final String bucket) throws IOException, ServletException {
-		final String fileName = part.getSubmittedFileName();
+		final String fileName = getFileName(part);
 		String videoUrl = req.getParameter("videoUrl");
 		// Check extension of file
 		if (fileName != null && !fileName.isEmpty() && fileName.contains(".")) {
