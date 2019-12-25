@@ -1,10 +1,9 @@
 package com.boulder.mchistory.auth;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.sql.SQLException;
-import java.util.logging.Logger;
+import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
+import com.boulder.mchistory.daos.UserDao;
+import com.boulder.mchistory.objects.User;
+import com.boulder.mchistory.util.CloudStorageHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -13,11 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-
-import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
-import com.boulder.mchistory.daos.UserDao;
-import com.boulder.mchistory.objects.User;
-import com.boulder.mchistory.util.CloudStorageHelper;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.sql.SQLException;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 @MultipartConfig
@@ -47,12 +46,11 @@ public class SignupEmail extends HttpServlet {
 			String hash = "";
 			String actHash = "";
 			String rand = new RandomString().toString();
-			Long uid;
 			String error = "";
 			req.setAttribute("signupError", "");
 			
 			try {
-				if (dao.isUser(email) == true) {
+				if (dao.isUser(email)) {
 					error = "User already exists.";
 					req.setAttribute("signupEmail", email);
 					req.setAttribute("signupError", error);
@@ -91,7 +89,7 @@ public class SignupEmail extends HttpServlet {
 
 			
 			try {
-				uid = dao.createUser(userBuild);
+				dao.createUser(userBuild);
 			} catch (Exception e) {
 				throw new ServletException("create/get user error", e);
 			}
