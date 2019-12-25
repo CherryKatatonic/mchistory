@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="mchistory" />
+        <module name="mchistory-ubm" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="mchistory" target="1.8" />
+      <module name="mchistory-ubm" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

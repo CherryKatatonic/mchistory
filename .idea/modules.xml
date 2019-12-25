@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/src/main/main.iml" filepath="$PROJECT_DIR$/src/main/main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mchistory.iml" filepath="$PROJECT_DIR$/mchistory.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mchistory-ubm.iml" filepath="$PROJECT_DIR$/mchistory-ubm.iml" />
     </modules>
   </component>
 </project>
