@@ -184,6 +184,14 @@ a:focus, a:hover {
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgb(175, 126, 3);
 }
 
+.card {
+    background: #e3c871;
+    border: 2px solid goldenrod;
+    border-radius: 5px;
+    padding: 1rem;
+    margin: 1rem 0 1rem 0;
+}
+
 input[type=file] {
     border-color: goldenrod;
     background-color: #f3e38c;
