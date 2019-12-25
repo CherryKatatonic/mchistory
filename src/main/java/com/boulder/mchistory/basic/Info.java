@@ -1,10 +1,8 @@
 package com.boulder.mchistory.basic;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import com.boulder.mchistory.daos.UserDao;
+import com.boulder.mchistory.objects.Result;
+import com.boulder.mchistory.objects.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -12,20 +10,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import javax.ws.rs.core.MediaType;
-
-import com.boulder.mchistory.daos.TextDao;
-import com.boulder.mchistory.daos.TextDatastore;
-import com.boulder.mchistory.daos.UserDao;
-import com.boulder.mchistory.objects.Result;
-import com.boulder.mchistory.objects.Text;
-import com.boulder.mchistory.objects.User;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.multipart.FormDataMultiPart;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 @MultipartConfig
