@@ -1,23 +1,22 @@
 package com.boulder.mchistory.util;
 
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyFactory;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.datastore.*;
 import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
-import com.google.cloud.datastore.Transaction;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -25,37 +24,25 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 // [START init]
-@WebFilter(filterName = "DatastoreSessionFilter", 
-    urlPatterns = { "", 
-    "/LoginGoogle", 
-    "/Logout", 
+@WebFilter(filterName = "DatastoreSessionFilter",
+    urlPatterns = { "",
+    "/LoginGoogle",
+    "/Logout",
     "/oauth2callback",
-    "/DeleteAlbum", 
-    "/DeletePost", 
-    "/EditAlbum", 
-    "/EditPost", 
-    "/Home", 
+    "/DeleteAlbum",
+    "/DeletePost",
+    "/EditAlbum",
+    "/EditPost",
+    "/Home",
     "/ListAlbums",
-    "/ListBkmks", 
+    "/ListBkmks",
     "/LoginEmail",
-    "/SignupEmail", 
-    "/NewAlbum", 
-    "/NewPost", 
-    "/ViewAlbum", 
-    "/ViewPost", 
+    "/SignupEmail",
+    "/NewAlbum",
+    "/NewPost",
+    "/ViewAlbum",
+    "/ViewPost",
   })
 
 public class DatastoreSessionFilter implements Filter {
@@ -67,8 +54,9 @@ public class DatastoreSessionFilter implements Filter {
   @Override
   public void init(FilterConfig config) throws ServletException {
     // initialize local copy of datastore session variables
+    GoogleCredentials credentials = (GoogleCredentials) config.getServletContext().getAttribute("GOOGLE_CREDENTIALS");
+    datastore = DatastoreOptions.newBuilder().setCredentials(credentials).build().getService();
 
-    datastore = DatastoreOptions.getDefaultInstance().getService();
     keyFactory = datastore.newKeyFactory().setKind("SessionVariable");
     // Delete all sessions unmodified for over two days
     DateTime dt = DateTime.now(DateTimeZone.UTC);
@@ -228,7 +216,7 @@ public class DatastoreSessionFilter implements Filter {
    * @param varValue the value of the desired session variable
    */
   protected void setSessionVariables(String sessionId, Map<String, String> setMap) {
-    
+
     if (sessionId.equals("")) {
       return;
     }
@@ -306,7 +294,7 @@ public class DatastoreSessionFilter implements Filter {
     }
 
     return datastoreMap;
-    
+
   }
   // [END loadSessionVariables]
 }
