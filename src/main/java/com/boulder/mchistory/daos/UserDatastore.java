@@ -1,55 +1,37 @@
 package com.boulder.mchistory.daos;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import com.boulder.mchistory.auth.PasswordStorage;
+import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
+import com.boulder.mchistory.auth.PasswordStorage.InvalidHashException;
+import com.boulder.mchistory.objects.Result;
+import com.boulder.mchistory.objects.User;
+import com.google.cloud.datastore.*;
+import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.boulder.mchistory.auth.PasswordStorage;
-import com.boulder.mchistory.auth.PasswordStorage.CannotPerformOperationException;
-import com.boulder.mchistory.auth.PasswordStorage.InvalidHashException;
-import com.boulder.mchistory.objects.Post;
-import com.boulder.mchistory.objects.Result;
-import com.boulder.mchistory.objects.User;
-import com.google.cloud.datastore.Cursor;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.EntityQuery;
-import com.google.cloud.datastore.FullEntity;
-import com.google.cloud.datastore.IncompleteKey;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyFactory;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.QueryResults;
-import com.google.cloud.datastore.StructuredQuery.OrderBy;
-import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
-import java.util.logging.Logger;
-
-
 public class UserDatastore implements UserDao {
-	
-	private static final Logger logger = Logger.getLogger(UserDatastore.class.getName());
-	private Datastore datastore;
-	private KeyFactory keyFactory;
-	private KeyFactory hashFactory;
+
+	private final Datastore datastore;
+	private final KeyFactory keyFactory;
+	private final KeyFactory hashFactory;
 
 	public UserDatastore() {
-		datastore = DatastoreOptions.getDefaultInstance().getService(); // Authorized Datastore service
+		datastore = DatastoreOptions.getDefaultInstance().getService();
 	    keyFactory = datastore.newKeyFactory().setKind("User");
 	    hashFactory = datastore.newKeyFactory().setKind("Hash");
 	}
 	
 	@Override
-	public Boolean isUser(String email) throws SQLException {
-		Boolean isUser = false;
-		EntityQuery query = Query.newEntityQueryBuilder()          // Build the Query
-				.setKind("User")                                        // We only care about Books
-				.setFilter(PropertyFilter.eq(User.EMAIL, email))// Only for this user
+	public Boolean isUser(String email) {
+		boolean isUser = false;
+		EntityQuery query = Query.newEntityQueryBuilder()
+				.setKind("User")
+				.setFilter(PropertyFilter.eq(User.EMAIL, email))
 				.build();
-		QueryResults<Entity> result = datastore.run(query);   // Run the Query
+		QueryResults<Entity> result = datastore.run(query);
 		
 		if (result.hasNext()) {
 			isUser = true;
@@ -58,25 +40,25 @@ public class UserDatastore implements UserDao {
 	}
 	
 	public Long getUid(String email) throws SQLException {
+		Long resp;
 
-		Long resp = null;
+		EntityQuery query = Query.newEntityQueryBuilder()
+				.setKind("User")
+				.setFilter(PropertyFilter.eq(User.EMAIL, email))
+				.build();
+		QueryResults<Entity> result = datastore.run(query);
 
-			EntityQuery query = Query.newEntityQueryBuilder()          // Build the Query
-					.setKind("User")                                        // We only care about Books
-					.setFilter(PropertyFilter.eq(User.EMAIL, email))// Only for this user
-					.build();
-			QueryResults<Entity> result = datastore.run(query);   // Run the Query
-			
-			if (result.hasNext()) {
-				resp = result.next().getKey().getId();
-			} else {
-				throw new SQLException("User not found.");
-			}
+		if (result.hasNext()) {
+			resp = result.next().getKey().getId();
+		} else {
+			throw new SQLException("User not found.");
+		}
+
 		return resp;
 	}
 	
 	public User entityToUser(Entity entity) {
-	    return new User.Builder()                                     // Convert to Photo form
+	    return new User.Builder()
 	        .email(entity.getString(User.EMAIL))
 	        .username(entity.getString(User.USERNAME))
 	    	.emailVerified(entity.getBoolean(User.EMAILVERIFIED))
@@ -89,16 +71,16 @@ public class UserDatastore implements UserDao {
 	
 	public List<User> entitiesToUsers(QueryResults<Entity> results) {
 		List<User> resultList = new ArrayList<>();
-		while (results.hasNext()) {  // We still have data
-		      resultList.add(entityToUser(results.next()));      // Add the Book to the List
+		while (results.hasNext()) {
+		      resultList.add(entityToUser(results.next()));
 		    }
 		    return resultList;
 	}
 
 	@Override
-	public Long createUser(User user) throws SQLException, IOException {
+	public Long createUser(User user) {
 		
-		IncompleteKey key = keyFactory.newKey();          // Key will be assigned once written
+		IncompleteKey key = keyFactory.newKey();
 		FullEntity<IncompleteKey> incUserEntity = Entity.newBuilder(key)
 		.set(User.EMAIL, user.getEmail())
 		.set(User.USERNAME, user.getUsername())
@@ -110,13 +92,13 @@ public class UserDatastore implements UserDao {
 		.set(User.ROLE, user.getRole())
 		.build();
 		
-		Entity userEntity = datastore.add(incUserEntity); // Save the Entity
+		Entity userEntity = datastore.add(incUserEntity);
 		
 		return userEntity.getKey().getId();
 	}
 	
 	@Override
-	public void verifyEmail(Long uid) throws SQLException {
+	public void verifyEmail(Long uid) {
 		Entity entity = datastore.get(keyFactory.newKey(uid));
 		User user = entityToUser(entity);
 		user.setEmailVerified(true);
@@ -124,8 +106,7 @@ public class UserDatastore implements UserDao {
 	}
 	
 	@Override
-	public void setAdminPass(String pass) throws SQLException {
-		
+	public void setAdminPass(String pass) {
 		String hash = null;
 		
 		try {
@@ -134,7 +115,7 @@ public class UserDatastore implements UserDao {
 			e.printStackTrace();
 		}
 		
-		IncompleteKey key = hashFactory.newKey();          // Key will be assigned once written
+		IncompleteKey key = hashFactory.newKey();
 		FullEntity<IncompleteKey> incEnt = Entity.newBuilder(key)
 			.set("hash", hash)
 			.build();
@@ -143,8 +124,8 @@ public class UserDatastore implements UserDao {
 	}
 	
 	@Override
-	public Boolean verifyAdmin(String pass) throws SQLException {
-		Boolean valid = false;
+	public Boolean verifyAdmin(String pass) {
+		boolean valid = false;
 		EntityQuery query = Query.newEntityQueryBuilder()
 				.setKind("Hash")
 				.build();
@@ -152,23 +133,21 @@ public class UserDatastore implements UserDao {
 		Entity admin = result.next();
 		String hash = admin.getString("hash");
 		try {
-			if (PasswordStorage.verifyPassword(pass, hash) == true) {
+			if (PasswordStorage.verifyPassword(pass, hash)) {
 				valid = true;
 			}
-		} catch (CannotPerformOperationException e) {
-			e.printStackTrace();
-		} catch (InvalidHashException e) {
+		} catch (CannotPerformOperationException | InvalidHashException e) {
 			e.printStackTrace();
 		}
 		return valid;
 	}
 	
 	@Override
-	public User grantAdmin(Long uid) throws SQLException {
+	public User grantAdmin(Long uid) {
 		Entity entity = datastore.get(keyFactory.newKey(uid));
 		User user = entityToUser(entity);
-		Key key = keyFactory.newKey(user.getId());  // From a user, create a Key
-	    Entity newEntity = Entity.newBuilder(key)         // Convert User to an Entity
+		Key key = keyFactory.newKey(user.getId());
+	    Entity newEntity = Entity.newBuilder(key)
 	        .set(User.EMAIL, user.getEmail())
 	        .set(User.USERNAME, user.getUsername())
 	        .set(User.ACTHASH, getActHash(user.getId()))
@@ -183,35 +162,34 @@ public class UserDatastore implements UserDao {
 	}
 
 	@Override
-	public User getUser(Long uid) throws SQLException {
+	public User getUser(Long uid) {
 		Entity entity = datastore.get(keyFactory.newKey(uid));
 		return entityToUser(entity);
 	}
 	
 	@Override
-	public void addBookmark(User user, String postId) throws SQLException {
+	public void addBookmark(User user, String postId) {
 		// TODO
 	}
 	
 	@Override
-	public Result<Object> listBkmks(User user) throws SQLException {
+	public Result<Object> listBkmks(User user) {
 		// TODO 
 		return null;
 	}
 	
 	@Override
-	public String getHash(Long uid) throws SQLException {
+	public String getHash(Long uid) {
 		Entity entity = datastore.get(keyFactory.newKey(uid));
-		String hash = entity.getString(User.HASH);
-		return hash;
+		return entity.getString(User.HASH);
 	}
 	
 	@Override
-	public void setHash(Long uid, String hash) throws SQLException {
+	public void setHash(Long uid, String hash) {
 		Entity entity = datastore.get(keyFactory.newKey(uid));
 		User user = entityToUser(entity);
 		Key key = keyFactory.newKey(uid);
-		Entity inc = Entity.newBuilder(key)         // Convert User to an Entity
+		Entity inc = Entity.newBuilder(key)
 		        .set(User.EMAIL, user.getEmail())
 		        .set(User.USERNAME, user.getUsername())
 		    	.set(User.ACTHASH, getActHash(user.getId()))
@@ -225,16 +203,15 @@ public class UserDatastore implements UserDao {
 	}
 	
 	@Override
-	public String getActHash(Long uid) throws SQLException {
+	public String getActHash(Long uid) {
 		Entity entity = datastore.get(keyFactory.newKey(uid));
-		String actHash = entity.getString(User.ACTHASH);
-		return actHash;
+		return entity.getString(User.ACTHASH);
 	}
 
 	@Override
-	public void editUser(User user) throws SQLException {
-		Key key = keyFactory.newKey(user.getId());  // From a user, create a Key
-	    Entity entity = Entity.newBuilder(key)         // Convert User to an Entity
+	public void editUser(User user) {
+		Key key = keyFactory.newKey(user.getId());
+	    Entity entity = Entity.newBuilder(key)
 	        .set(User.EMAIL, user.getEmail())
 	        .set(User.USERNAME, user.getUsername())
 	    	.set(User.ACTHASH, getActHash(user.getId()))
@@ -248,20 +225,20 @@ public class UserDatastore implements UserDao {
 	}
 
 	@Override
-	public void deleteUser(Long userId) throws SQLException {
-		Key key = keyFactory.newKey(userId);        // Create the Key
+	public void deleteUser(Long userId) {
+		Key key = keyFactory.newKey(userId);
 	    datastore.delete(key); 
 	}
 
 	@Override
-	public Result<User> listUsers(String startCursor) throws SQLException {
-		// TODO Auto-generated method stub
+	public Result<User> listUsers(String startCursor) {
+		// TODO
 		return null;
 	}
 	
 	@Override
-	public Result<User> listAdmins() throws SQLException {
-		Query<Entity> query = Query.newEntityQueryBuilder()      // Build the Query
+	public Result<User> listAdmins() {
+		Query<Entity> query = Query.newEntityQueryBuilder()
 	            .setKind("User") 
 	            .setFilter(PropertyFilter.eq(User.ISADMIN, true))
 	            .build();
@@ -269,5 +246,4 @@ public class UserDatastore implements UserDao {
 	    List<User> resultAdmins = entitiesToUsers(resultList);
 	    return new Result<>(resultAdmins);
 	}
-
 }
