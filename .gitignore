@@ -9,6 +9,7 @@
 
 # Eclipse
 .settings
+.project
 
 # CMake
 cmake-build-debug/
